@@ -11,7 +11,6 @@ status_key = ["player_list",
 """
 import random
 import statistics
-import tkinter as tk
 from tkinter import messagebox, simpledialog
 
 

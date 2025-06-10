@@ -15,7 +15,7 @@ from tkinter import messagebox, simpledialog
 
 
 # 属性
-NINGEN = ["村人", "占い師", "狂人", "霊能者", "狩人", "共有者", "背徳者", "ポンコツ"]
+NINGEN = ["村人", "占い師", "霊能者", "狩人", "共有者", "ポンコツ", "狂人", "背徳者"]
 JINROU = ["人狼"]
 YOUKO = ["妖狐"]
 
@@ -66,31 +66,6 @@ class Uranaishi(Player):
         return status
 
 
-class Kyoujin(Player):
-    def __init__(self, name):
-        self.job = "狂人"
-        super().__init__(name)
-
-
-class Jinrou(Player):
-    def __init__(self, name):
-        self.job = "人狼"
-        super().__init__(name)
-
-    def display_job(self, status):
-        super().display_job(status)
-        jinrou_name_list = [p.name for p in status["player_list"] if p.zokusei == "人狼"]
-        messagebox.showinfo(f"仲間の人狼を表示", f"生存している 人狼 は、{jinrou_name_list} です。")
-
-    def job_skill(self, status):
-        if self.name == status["attacker_name"]:
-            messagebox.showinfo("スキル", "誰か一人を選んで、襲撃します。\n次のページで襲撃する相手を選んでください。")
-            status["attack_taishou_list"].append(attack(status["player_list"]))
-        else:
-            messagebox.showinfo("スキル", f"今夜の襲撃は {status['attacker_name']} が行います。")
-        return status
-
-
 class Reinousha(Player):
     def __init__(self, name):
         self.job = "霊能者"
@@ -124,23 +99,6 @@ class Kyouyuusha(Player):
         messagebox.showinfo(f"{self.name}", f"生存している 共有者 は、{kyouyuusha_name_list} です。")
 
 
-class Youko(Player):
-    def __init__(self, name):
-        self.job = "妖狐"
-        super().__init__(name)
-
-
-class Haitokusha(Player):
-    def __init__(self, name):
-        self.job = "背徳者"
-        super().__init__(name)
-
-    def display_job(self, status):
-        super().display_job(status)
-        youko_name_list = [p.name for p in status["player_list"] if p.zokusei == "妖狐"]
-        messagebox.showinfo(f"{self.name}", f"生存している 妖狐 は、{youko_name_list} です。")
-
-
 class Ponkotsu(Player):
     def __init__(self, name):
         self.job = "ポンコツ"
@@ -167,6 +125,48 @@ class Ponkotsu(Player):
             messagebox.showinfo("スキル", "誰か一人を選んで、人狼 の襲撃から護ります。\n次のページで護衛する相手を選んでください。")
             select_player(player_list_without_you)
         return status
+
+
+class Kyoujin(Player):
+    def __init__(self, name):
+        self.job = "狂人"
+        super().__init__(name)
+
+
+class Jinrou(Player):
+    def __init__(self, name):
+        self.job = "人狼"
+        super().__init__(name)
+
+    def display_job(self, status):
+        super().display_job(status)
+        jinrou_name_list = [p.name for p in status["player_list"] if p.zokusei == "人狼"]
+        messagebox.showinfo(f"仲間の人狼を表示", f"生存している 人狼 は、{jinrou_name_list} です。")
+
+    def job_skill(self, status):
+        if self.name == status["attacker_name"]:
+            messagebox.showinfo("スキル", "誰か一人を選んで、襲撃します。\n次のページで襲撃する相手を選んでください。")
+            status["attack_taishou_list"].append(attack(status["player_list"]))
+        else:
+            messagebox.showinfo("スキル", f"今夜の襲撃は {status['attacker_name']} が行います。")
+        return status
+
+
+class Haitokusha(Player):
+    def __init__(self, name):
+        self.job = "背徳者"
+        super().__init__(name)
+
+    def display_job(self, status):
+        super().display_job(status)
+        youko_name_list = [p.name for p in status["player_list"] if p.zokusei == "妖狐"]
+        messagebox.showinfo(f"{self.name}", f"生存している 妖狐 は、{youko_name_list} です。")
+
+
+class Youko(Player):
+    def __init__(self, name):
+        self.job = "妖狐"
+        super().__init__(name)
 
 
 # メインゲーム
@@ -206,16 +206,16 @@ def announce_asa(day_count):
     messagebox.showinfo("朝", f"{day_count}日目の朝になりました。")
 
 
-def announce_yoru():
-    messagebox.showinfo("夜", "夜になりました。")
-
-
 def announce_start_kaigi():
     messagebox.showinfo("会議", "会議を始めます。\n会議が終わったら、Enter を押してください。")
 
 
 def announce_touhyou():
     messagebox.showinfo("投票", "投票を行います。")
+
+
+def announce_yoru():
+    messagebox.showinfo("夜", "夜になりました。")
 
 
 def announce_giseisha(giseiha):
@@ -394,16 +394,16 @@ def goei(your_name, player_list):
     return goei_taishou
 
 
-def decide_attacker(status):
-    jinrou_name_list = [p.name for p in status["player_list"] if p.zokusei == "人狼"]
-    status["attacker_name"] = random.choice(jinrou_name_list)
-    return status
-
-
 def attack(player_list):
     player_list_without_jinrou = [p for p in player_list if p.zokusei != "人狼"]
     attack_taishou = select_player(player_list_without_jinrou)
     return attack_taishou
+
+
+def decide_attacker(status):
+    jinrou_name_list = [p.name for p in status["player_list"] if p.zokusei == "人狼"]
+    status["attacker_name"] = random.choice(jinrou_name_list)
+    return status
 
 
 def jisatsu(status):
